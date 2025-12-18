@@ -8,6 +8,9 @@
 
 import Foundation
 
+
+private var UserDefaultGroupSuitName = ""
+
 /// Internal current language key
 let LCLCurrentLanguageKey = "LCLCurrentLanguageKey"
 
@@ -114,10 +117,20 @@ open class Localize: NSObject {
      - Returns: The current language. String.
      */
     open class func currentLanguage() -> String {
-        if let currentLanguage = UserDefaults.standard.object(forKey: LCLCurrentLanguageKey) as? String {
+        if let currentLanguage = UserDefaults(suiteName: UserDefaultGroupSuitName)?.object(forKey: LCLCurrentLanguageKey) as? String ?? UserDefaults.standard.object(forKey: LCLCurrentLanguageKey) as? String {
             return currentLanguage
         }
         return defaultLanguage()
+    }
+    
+    class func setUserDefaultGroupSuitName(_ suitName: String) {
+        UserDefaultGroupSuitName = suitName
+    }
+    
+    class func setCurrentLanguageForAppGroupIfNeeded() {
+        if let currentLanguage = UserDefaults.standard.object(forKey: LCLCurrentLanguageKey) as? String, (UserDefaults(suiteName: UserDefaultGroupSuitName)?.object(forKey: LCLCurrentLanguageKey) as? String) != currentLanguage {
+            UserDefaults(suiteName: UserDefaultGroupSuitName)?.set(currentLanguage, forKey: LCLCurrentLanguageKey)
+        }
     }
     
     /**
@@ -129,6 +142,7 @@ open class Localize: NSObject {
         if (selectedLanguage != currentLanguage()){
             UserDefaults.standard.set(selectedLanguage, forKey: LCLCurrentLanguageKey)
             UserDefaults.standard.synchronize()
+            UserDefaults(suiteName: UserDefaultGroupSuitName)?.set(selectedLanguage, forKey: LCLCurrentLanguageKey)
             NotificationCenter.default.post(name: Notification.Name(rawValue: LCLLanguageChangeNotification), object: nil)
         }
     }
