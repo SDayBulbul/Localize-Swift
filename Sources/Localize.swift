@@ -123,11 +123,11 @@ open class Localize: NSObject {
         return defaultLanguage()
     }
     
-    class func setUserDefaultGroupSuitName(_ suitName: String) {
+    open class func setUserDefaultGroupSuitName(_ suitName: String) {
         UserDefaultGroupSuitName = suitName
     }
     
-    class func setCurrentLanguageForAppGroupIfNeeded() {
+    open class func setCurrentLanguageForAppGroupIfNeeded() {
         if let currentLanguage = UserDefaults.standard.object(forKey: LCLCurrentLanguageKey) as? String, (UserDefaults(suiteName: UserDefaultGroupSuitName)?.object(forKey: LCLCurrentLanguageKey) as? String) != currentLanguage {
             UserDefaults(suiteName: UserDefaultGroupSuitName)?.set(currentLanguage, forKey: LCLCurrentLanguageKey)
         }
