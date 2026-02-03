@@ -12,7 +12,7 @@ import Foundation
 private var UserDefaultGroupSuitName = ""
 
 /// Internal current language key
-let LCLCurrentLanguageKey = "LCLCurrentLanguageKey"
+public let LCLCurrentLanguageKey = "LCLCurrentLanguageKey"
 
 /// Default language. English. If English is unavailable defaults to base localization.
 let LCLDefaultLanguage = "en"
@@ -152,25 +152,34 @@ open class Localize: NSObject {
      - Returns: The app's default language. String.
      */
     open class func defaultLanguage() -> String {
-        var defaultLanguage: String = String()
+        
+        // App supported Languages
+        let availableLanguages: [String] = self.availableLanguages()
+        // Check From Phone Languages Order
+        if let phoneLanguageID = Locale.preferredLanguages.first {
+            if availableLanguages.contains(phoneLanguageID) {
+                return phoneLanguageID
+            }
+        }
+        
+        // Check From App Languages Order
         guard let preferredLanguage = Bundle.main.preferredLocalizations.first else {
             return LCLDefaultLanguage
         }
-        let availableLanguages: [String] = self.availableLanguages()
-        if (availableLanguages.contains(preferredLanguage)) {
-            defaultLanguage = preferredLanguage
+        
+        if availableLanguages.contains(preferredLanguage) {
+            return preferredLanguage
         }
-        else {
-            defaultLanguage = LCLDefaultLanguage
-        }
-        return defaultLanguage
+        
+        return LCLDefaultLanguage
     }
     
     /**
      Resets the current language to the default
      */
     open class func resetCurrentLanguageToDefault() {
-        setCurrentLanguage(self.defaultLanguage())
+        UserDefaults.standard.removeObject(forKey: LCLCurrentLanguageKey)
+        UserDefaults(suiteName: UserDefaultGroupSuitName)?.removeObject(forKey: LCLCurrentLanguageKey)
     }
     
     /**
