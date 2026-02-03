@@ -20,6 +20,9 @@ let LCLDefaultLanguage = "en"
 /// Base bundle as fallback.
 let LCLBaseBundle = "Base"
 
+/// Phones prefered language
+public let PhoneLanguageID = Locale.preferredLanguages.first
+
 /// Name for language change notification
 public let LCLLanguageChangeNotification = "LCLLanguageChangeNotification"
 
@@ -156,9 +159,9 @@ open class Localize: NSObject {
         // App supported Languages
         let availableLanguages: [String] = self.availableLanguages()
         // Check From Phone Languages Order
-        if let phoneLanguageID = Locale.preferredLanguages.first {
-            if availableLanguages.contains(phoneLanguageID) {
-                return phoneLanguageID
+        if let tempID = PhoneLanguageID {
+            if availableLanguages.contains(tempID) {
+                return tempID
             }
         }
         
